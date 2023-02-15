@@ -1,0 +1,36 @@
+version: '3.8'
+
+networks:
+  tutorial-net:
+    driver: bridge
+
+volumes:
+  tutorial-db:
+    driver: local
+
+services:
+  nginx-server:
+    image: nginx:stable-alpine
+    container_name: nginx-server-container
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/sites:/etc/nginx/sites-enabled
+      - ./www/app-01:/var/www/app-01.test/httpdocs/
+    networks:
+      tutorial-net:
+        aliases:
+          - app-01.test
+  app-01:
+    build:
+      context: ./php/app-01
+    container_name: app-01-container
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./www/app-01:/var/www/app-01.test/httpdocs
+      - ./php/app-01/custom.ini:/usr/local/etc/php/conf.d/app-01.ini
+    networks:
+      tutorial-net:
