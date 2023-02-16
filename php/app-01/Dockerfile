@@ -4,7 +4,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 
 RUN chmod +x /usr/local/bin/install-php-extensions
 
-RUN install-php-extensions opcache intl zip
+RUN install-php-extensions opcache intl zip pdo_mysql
 
 RUN apt-get -y update && \
     apt-get -y install git unzip

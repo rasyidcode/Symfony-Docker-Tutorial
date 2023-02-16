@@ -1,11 +1,11 @@
 version: '3.8'
 
 networks:
-  tutorial-net:
+  common-net:
     driver: bridge
 
 volumes:
-  tutorial-db:
+  central-db-data:
     driver: local
 
 services:
@@ -16,12 +16,25 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/sites:/etc/nginx/sites-enabled
+      - ./nginx/sites:/etc/nginx/conf.d
       - ./www/app-01:/var/www/app-01.test/httpdocs/
     networks:
-      tutorial-net:
+      common-net:
         aliases:
           - app-01.test
+  central-db:
+    image: mysql:5.7.40
+    container_name: central-db-container
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - central-db-data:/var/lib/mysql
+    networks:
+      - common-net
   app-01:
     build:
       context: ./php/app-01
@@ -33,4 +46,4 @@ services:
       - ./www/app-01:/var/www/app-01.test/httpdocs
       - ./php/app-01/custom.ini:/usr/local/etc/php/conf.d/app-01.ini
     networks:
-      tutorial-net:
+      - common-net
