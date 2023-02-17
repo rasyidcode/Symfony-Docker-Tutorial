@@ -5,7 +5,9 @@ networks:
     driver: bridge
 
 volumes:
-  central-db-data:
+  mysql-db-data:
+    driver: local
+  pgsql-db-data:
     driver: local
 
 services:
@@ -14,7 +16,7 @@ services:
     container_name: nginx-server-container
     restart: unless-stopped
     ports:
-      - "80:80"
+      - 80:80
     volumes:
       - ./nginx/sites:/etc/nginx/conf.d
       - ./www/app-01:/var/www/app-01.test/httpdocs/
@@ -22,28 +24,62 @@ services:
       common-net:
         aliases:
           - app-01.test
-  central-db:
+          - app-02.test
+  mysql-db:
     image: mysql:5.7.40
-    container_name: central-db-container
+    container_name: mysql-db-container
     ports:
-      - "3306:3306"
+      - 3306:3306
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: secret
     volumes:
-      - central-db-data:/var/lib/mysql
+      - mysql-db-data:/var/lib/mysql
     networks:
       - common-net
-  app-01:
-    build:
-      context: ./php/app-01
-    container_name: app-01-container
+  pgsql-db:
+    image: postgres:15.2
+    container_name: pgsql-db-container
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: secret
+    ports:
+      - 5432:5432
+    volumes:
+      - pgsql-db-data:/var/lib/postgresql/data
+    networks:
+      - common-net
+  adminer:
+    image: adminer:4.8.1
+    container_name: adminer-container
     restart: unless-stopped
     ports:
-      - "9000:9000"
+      - 8080:8080
+    networks:
+      - common-net
+  php74:
+    build:
+      context: ./php/php74
+    container_name: php74-container
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    volumes:
+      - ./www/app-01b:/var/www/app-01b.test/httpdocs
+      - ./php/php74/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - common-net
+  php82:
+    build:
+      context: ./php/php82
+    container_name: php82-container
+    restart: unless-stopped
+    ports:
+      - 9001:9000
     volumes:
       - ./www/app-01:/var/www/app-01.test/httpdocs
-      - ./php/app-01/custom.ini:/usr/local/etc/php/conf.d/app-01.ini
+      - ./www/app-02:/var/www/app-02.test/httpdocs
+      - ./php/php82/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - common-net
