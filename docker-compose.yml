@@ -19,11 +19,14 @@ services:
       - 80:80
     volumes:
       - ./nginx/sites:/etc/nginx/conf.d
-      - ./www/app-01:/var/www/app-01.test/httpdocs/
+      - ./www/app-01:/var/www/app-01.test/httpdocs
+      - ./www/app-01b:/var/www/app-01b.test/httpdocs
+      - ./www/app-02:/var/www/app-02.test/httpdocs
     networks:
       common-net:
         aliases:
           - app-01.test
+          - app-01b.test
           - app-02.test
   mysql-db:
     image: mysql:5.7.40
