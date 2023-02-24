@@ -20,8 +20,10 @@ services:
     volumes:
       - ./nginx/sites:/etc/nginx/conf.d
       - ./www/app-01:/var/www/app-01.test/httpdocs
-      - ./www/app-01b:/var/www/app-01b.test/httpdocs
       - ./www/app-02:/var/www/app-02.test/httpdocs
+    depends_on:
+      - php74
+      - php82
     networks:
       common-net:
         aliases:
@@ -69,7 +71,6 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ./www/app-01b:/var/www/app-01b.test/httpdocs
       - ./php/php74/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - common-net
