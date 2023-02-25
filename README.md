@@ -8,3 +8,4 @@
 ```bash
 docker compose exec service_name bash -c "cd .. && pwd"
 ```
+- Test
