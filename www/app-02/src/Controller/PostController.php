@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\ArgumentResolver\Body;
 use App\ArgumentResolver\QueryParam;
+use App\Dto\CreateCommentDto;
 use App\Dto\CreatePostDto;
 use App\Dto\UpdatePostDto;
 use App\Dto\UpdatePostStatusDto;
+use App\Entity\Comment;
 use App\Entity\PostFactory;
 use App\Exception\PostNotFoundException;
 use App\Repository\PostRepository;
@@ -15,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[Route('/posts', name: 'posts_')]
@@ -24,8 +25,7 @@ class PostController extends AbstractController
 
     public function __construct(
         private readonly PostRepository $postRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly SerializerInterface $serializer,
+        private readonly EntityManagerInterface $entityManager
     ) {
     }
 
@@ -103,5 +103,33 @@ class PostController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route(path: '/{id}/comments', name: 'get_comments', methods: ['GET'])]
+    public function getComments(Uuid $id): JsonResponse
+    {
+        $post = $this->postRepository->findOneBy(['id' => $id]);
+        if (!$post) {
+            throw new PostNotFoundException($id);
+        }
+
+        return $this->json($post->getComments());
+    }
+
+    #[Route(path: '/{id}/comments', name: 'add_comments', methods: ['POST'])]
+    public function addComment(Uuid $id, #[Body] CreateCommentDto $data): JsonResponse
+    {
+        $post = $this->postRepository->findOneBy(['id' => $id]);
+        if (!$post) {
+            throw new PostNotFoundException($id);
+        }
+
+        $comment = new Comment();
+        $comment->setContent($data->getContent());
+
+        $this->entityManager->persist($comment->setPost($post));
+        $this->entityManager->flush();
+
+        return $this->json([], Response::HTTP_CREATED, ['Location' => '/comments/' . $comment->getId()]);
     }
 }
