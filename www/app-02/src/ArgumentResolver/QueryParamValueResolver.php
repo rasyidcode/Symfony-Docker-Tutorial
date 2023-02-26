@@ -10,10 +10,8 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 class QueryParamValueResolver implements ArgumentValueResolverInterface, LoggerAwareInterface
 {
-
     public function __construct()
     {
-        
     }
 
     private LoggerInterface $logger;
@@ -21,9 +19,11 @@ class QueryParamValueResolver implements ArgumentValueResolverInterface, LoggerA
     /**
      * Whether this resolver can resolve the value for the given ArgumentMetadata.
      *
+     * @param Request $request
+     * @param ArgumentMetadata $argument
      * @return bool
      */
-    public function supports(Request $request, ArgumentMetadata $argument)
+    public function supports(Request $request, ArgumentMetadata $argument): bool
     {
         $attrs = $argument->getAttributes(QueryParam::class);
         // dd($attrs);
@@ -33,12 +33,14 @@ class QueryParamValueResolver implements ArgumentValueResolverInterface, LoggerA
     /**
      * Returns the possible value(s).
      *
+     * @param Request $request
+     * @param ArgumentMetadata $argument
      * @return iterable
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $argumentName = $argument->getName();
-        // dd($argumentName);
+//         dd($argumentName);
         $this->logger->info('Found [QueryParam] annotation/attribute "' . $argumentName . '", applying [QueryParamValueResolver]');
 
         $type = $argument->getType();

@@ -81,7 +81,7 @@ class PostRepository extends ServiceEntityRepository
         $c = count($paginator);
         $content = new ArrayCollection();
         foreach($paginator as $post) {
-            $content->add(PostSummaryDto::of($post->getId(), $post->getTitle()));
+            $content->add(PostSummaryDto::of($post->getId(), $post->getTitle(), $post->getContent(), $post->getStatus()));
         }
 
         return Page::of($content, $c, $offset, $limit);

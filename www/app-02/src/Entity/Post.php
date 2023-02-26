@@ -26,6 +26,9 @@ class Post
     #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $content = null;
 
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: Status::class)]
+    private ?Status $status = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -40,6 +43,7 @@ class Post
 
     public function __construct()
     {
+        $this->status = Status::Draft;
         $this->createdAt = new DateTime();
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
@@ -150,5 +154,21 @@ class Post
         $this->tags->removeElement($tag);
 
         return $this;
+    }
+
+    /**
+     * @return ?Status
+     */
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param ?Status $status
+     */
+    public function setStatus(?Status $status): void
+    {
+        $this->status = $status;
     }
 }

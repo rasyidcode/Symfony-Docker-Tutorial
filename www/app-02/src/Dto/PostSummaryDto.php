@@ -2,19 +2,24 @@
 
 namespace App\Dto;
 
+use App\Entity\Status;
+
 class PostSummaryDto
 {
 
     private string $id;
     private string $title;
+    private string $content;
+    private ?Status $status;
 
-    public static function of(string $id, string $title): PostSummaryDto
+    public static function of(string $id, string $title, string $content, ?Status $status): PostSummaryDto
     {
         $dto = new PostSummaryDto();
-        $dto
-            ->setId($id)
-            ->setTitle($title);
-        
+        $dto->setId($id);
+        $dto->setTitle($title);
+        $dto->setContent($content);
+        $dto->setStatus($status);
+
         return $dto;
     }
 
@@ -33,14 +38,10 @@ class PostSummaryDto
      * Set the value of id
      *
      * @param string $id
-     *
-     * @return self
      */
-    public function setId(string $id): self
+    public function setId(string $id):void
     {
         $this->id = $id;
-
-        return $this;
     }
 
     /**
@@ -58,12 +59,41 @@ class PostSummaryDto
      *
      * @param string $title
      *
-     * @return self
      */
-    public function setTitle(string $title): self
+    public function setTitle(string $title): void
     {
         $this->title = $title;
+    }
 
-        return $this;
+    /**
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     */
+    public function setContent(string $content): void
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @return ?Status
+     */
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param ?Status $status
+     */
+    public function setStatus(?Status $status): void
+    {
+        $this->status = $status;
     }
 }

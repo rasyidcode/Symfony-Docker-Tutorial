@@ -24,4 +24,10 @@ services:
     # please note that last definitions always *replace* previous ones
     App\ArgumentResolver\QueryParamValueResolver:
         tags:
-            - { name: controller.argument_value_resolver, priority: 50 }
+            - { name: controller.argument_value_resolver, priority: 100 }
+    App\ArgumentResolver\UuidParamValueResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 150 }
+    App\ArgumentResolver\BodyValueResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 100 }
