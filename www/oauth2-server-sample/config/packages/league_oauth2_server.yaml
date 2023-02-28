@@ -3,15 +3,20 @@ league_oauth2_server:
         private_key: '%env(resolve:OAUTH_PRIVATE_KEY)%'
         private_key_passphrase: '%env(resolve:OAUTH_PASSPHRASE)%'
         encryption_key: '%env(resolve:OAUTH_ENCRYPTION_KEY)%'
-        encryption_key_type: plain
+        encryption_key_type: defuse
         access_token_ttl: PT1H
         refresh_token_ttl: P1M
         auth_code_ttl: PT10M
         enable_client_credentials_grant: true
+
         enable_password_grant: true
+
         enable_refresh_token_grant: true
+
         enable_auth_code_grant: true
+
         require_code_challenge_for_public_clients: true
+        
         persist_access_token: true
 
     resource_server:
