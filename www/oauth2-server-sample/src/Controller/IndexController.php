@@ -20,6 +20,7 @@ class IndexController extends AbstractController
     public function apiTest(): Response
     {
         $user = $this->getUser();
+
         return $this->json([
             'message'   => 'You successfully authenticated!',
             'email' => $user->getEmail()

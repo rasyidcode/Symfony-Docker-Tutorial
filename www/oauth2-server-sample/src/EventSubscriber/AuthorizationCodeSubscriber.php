@@ -55,7 +55,7 @@ class AuthorizationCodeSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            AuthorizationRequestResolveEvent::class => 'onAuthorizationRequestResolveEvent',
+            'league.oauth2_server.event.authorization_request_resolve' => 'onAuthorizationRequestResolveEvent',
         ];
     }
 }

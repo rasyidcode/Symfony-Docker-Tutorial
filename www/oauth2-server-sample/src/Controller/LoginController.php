@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\OAuth2ClientProfile;
 use App\Entity\OAuth2UserConsent;
-use Doctrine\Persistence\ManagerRegistry;
-use League\Bundle\OAuth2ServerBundle\Entity\Client;
+use Doctrine\ORM\EntityManagerInterface;
+use League\Bundle\OAuth2ServerBundle\Model\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,7 @@ class LoginController extends AbstractController
 
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly ManagerRegistry             $doctrine
+        private readonly EntityManagerInterface             $entityManager
     )
     {
     }
@@ -50,19 +50,19 @@ class LoginController extends AbstractController
     }
 
     #[Route('/consent', name: 'app_consent', methods: ['GET', 'POST'])]
-    public function consent(Request $request)
+    public function consent(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $clientId = $request->query->get('client_id');
         if (!$clientId || !ctype_alnum($clientId) || !$this->getUser()) {
             return $this->redirectToRoute('app_index');
         }
 
-        $appClient = $this->doctrine->getRepository(Client::class)->findOneBy(['identifier' => $clientId]);
+        $appClient = $this->entityManager->getRepository(Client::class)->findOneBy(['identifier' => $clientId]);
         if (!$appClient) {
             return $this->redirectToRoute('app_index');
         }
 
-        $appProfile = $this->doctrine->getRepository(OAuth2ClientProfile::class)->findOneBy(['client' => $appClient]);
+        $appProfile = $this->entityManager->getRepository(OAuth2ClientProfile::class)->findOneBy(['client' => $appClient]);
         $appName = $appProfile->getName();
 
         $requestedScopes = explode(' ', $request->query->get('scope'));
@@ -109,8 +109,8 @@ class LoginController extends AbstractController
 
                 $user->addOAuth2UserConsent($consents);
 
-                $this->doctrine->persist($consents);
-                $this->doctrine->flush();
+                $this->entityManager->persist($consents);
+                $this->entityManager->flush();
             }
 
             if ($request->request->get('consent' === 'no')) {

@@ -29,3 +29,6 @@ services:
     League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface:
         class: App\Repository\AccessTokenRepository
         decorates: 'League\Bundle\OAuth2ServerBundle\Repository\AccessTokenRepository'
+#    App\EventSubscriber\AuthorizationCodeSubscriber: #AuthorizationRequestResolveEvent
+#        tags:
+#            - { name: kernel.event_subscriber, event: league.oauth2_server.event.authorization_request_resolve, method: onAuthorizationRequestResolveEvent }

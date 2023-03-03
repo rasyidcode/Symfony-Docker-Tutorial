@@ -96,6 +96,7 @@ class App
     private function callbackAction()
     {
         $code = $_GET['code'] ?? null;
+//        var_dump($code);die();
         if (null === $code) {
             $content = 'No code provided<br>';
             if (isset($_GET['error_description'])) {
@@ -121,6 +122,7 @@ class App
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $response = curl_exec($ch);
         $response = json_decode($response, true);
+//        var_dump($response);die;
         $accessToken = $response['access_token'] ?? null;
         $content = '';
         if (!$accessToken) {
@@ -138,9 +140,15 @@ class App
                     'verify_peer_name' => false,
                 ],
             ]);
-            $jwks = JWK::parseKeySet(json_decode(file_get_contents($this->jwksUri, context: $streamContext), true));
-            JWT::$leeway = 10;
-            JWT::decode($accessToken, $jwks[1]);
+
+
+//            $jwks = JWK::parseKeySet(json_decode(file_get_contents($this->jwksUri, context: $streamContext), true));
+//            var_dump(json_decode(file_get_contents($this->jwksUri, context: $streamContext), true));die();
+//            var_dump(file_get_contents($this->jwksUri, false, context: $streamContext));die;
+//            var_dump($jwks);die;
+            var_dump(file_get_contents($this->jwksUri));die;
+//            JWT::$leeway = 10;
+//            JWT::decode($accessToken, $jwks[1]);
         } catch (\Exception $e) {
             $content = 'Error decoding JWT: ' . $e->getMessage();
             $this->render($content);
@@ -169,6 +177,7 @@ class App
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $response = curl_exec($ch);
         $response = json_decode($response, true);
+//        var_dump($response);die();
         $content = '<p>Calling API on ' . $this->apiUri . '<br>';
         $content .= 'With access token ' . $accessToken . '</p>';
         $content .= 'Response: <div class="w3-code"><pre>' . print_r($response, true) . '</pre></div><br>';
